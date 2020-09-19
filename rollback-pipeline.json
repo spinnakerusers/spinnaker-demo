@@ -1,0 +1,144 @@
+{
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "devops",
+  "limitConcurrent": true,
+  "parameterConfig": [
+    {
+      "default": "",
+      "description": "名称空间",
+      "hasOptions": false,
+      "label": "",
+      "name": "namespace",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "镜像名称",
+      "hasOptions": false,
+      "label": "",
+      "name": "image",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    }
+  ],
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "account": "default",
+      "cloudProvider": "kubernetes",
+      "manifests": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "labels": {
+              "k8s-app": "nginxdemo"
+            },
+            "name": "nginxdemo",
+            "namespace": "${ parameters.namespace }"
+          },
+          "spec": {
+            "replicas": 3,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "k8s-app": "nginxdemo"
+              }
+            },
+            "template": {
+              "metadata": {
+                "labels": {
+                  "k8s-app": "nginxdemo"
+                },
+                "name": "nginxdemo",
+                "namespace": "nginx-dev"
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "image": "${ parameters.image }",
+                    "imagePullPolicy": "Always",
+                    "name": "nginxdemo",
+                    "ports": [
+                      {
+                        "containerPort": 80,
+                        "name": "web",
+                        "protocol": "TCP"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "moniker": {
+        "app": "myappservice"
+      },
+      "name": "Deploy (Manifest)",
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "skipExpressionEvaluation": false,
+      "source": "text",
+      "trafficManagement": {
+        "enabled": false,
+        "options": {
+          "enableTraffic": false,
+          "services": []
+        }
+      },
+      "type": "deployManifest"
+    },
+    {
+      "failPipeline": true,
+      "instructions": "请选择要进行的操作\n\n${ execution}",
+      "judgmentInputs": [
+        {
+          "value": "rollback"
+        },
+        {
+          "value": "done"
+        }
+      ],
+      "name": "Manual Judgment",
+      "notifications": [],
+      "refId": "3",
+      "requisiteStageRefIds": [
+        "1"
+      ],
+      "type": "manualJudgment"
+    },
+    {
+      "account": "default",
+      "cloudProvider": "kubernetes",
+      "location": "nginx-dev",
+      "manifestName": "deployment nginxdemo",
+      "mode": "static",
+      "name": "Undo Rollout (Manifest)",
+      "numRevisionsBack": 1,
+      "refId": "4",
+      "requisiteStageRefIds": [
+        "3"
+      ],
+      "stageEnabled": {
+        "expression": "${ execution['stages'][1].context.judgmentInput == \"rollback\" }",
+        "type": "expression"
+      },
+      "type": "undoRolloutManifest"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1600477193000"
+}
