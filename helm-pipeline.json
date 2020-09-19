@@ -1,0 +1,86 @@
+{
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "devops",
+  "limitConcurrent": true,
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "expectedArtifacts": [
+        {
+          "defaultArtifact": {
+            "customKind": true,
+            "id": "468b34ce-12b8-4b70-8d97-1857de251999"
+          },
+          "displayName": "pretty-bullfrog-84",
+          "id": "5d10f917-47eb-4f08-a831-933f8fd66788",
+          "matchArtifact": {
+            "artifactAccount": "embedded-artifact",
+            "customKind": false,
+            "id": "5497e37c-8472-4e0a-85db-470cf3766556",
+            "name": "nginxtest",
+            "type": "embedded/base64"
+          },
+          "useDefaultArtifact": false,
+          "usePriorArtifact": false
+        }
+      ],
+      "inputArtifacts": [
+        {
+          "account": "my-gitlab-account",
+          "artifact": {
+            "artifactAccount": "my-gitlab-account",
+            "id": "32c4e95a-7a51-4446-b8a2-8fcb22eb32af",
+            "name": "http://gitlab.idevops.site/api/v4/projects/spinnaker%2fspinnaker-helm-demo/repository/files/deploy-app-0.1.0.tgz/raw",
+            "reference": "http://gitlab.idevops.site/api/v4/projects/spinnaker%2fspinnaker-helm-demo/repository/files/deploy-app-0.1.0.tgz/raw",
+            "type": "gitlab/file",
+            "version": "master"
+          }
+        },
+        {
+          "account": "my-gitlab-account",
+          "artifact": {
+            "artifactAccount": "my-gitlab-account",
+            "id": "8303d0b1-45e8-41ff-9d91-9ac79b41acf4",
+            "name": "http://gitlab.idevops.site/api/v4/projects/spinnaker%2fspinnaker-helm-demo/repository/files/dev.yaml/raw",
+            "reference": "http://gitlab.idevops.site/api/v4/projects/spinnaker%2fspinnaker-helm-demo/repository/files/dev.yaml/raw",
+            "type": "gitlab/file",
+            "version": "master"
+          }
+        }
+      ],
+      "name": "Bake (Manifest)",
+      "namespace": "nginxtest",
+      "outputName": "nginxtest",
+      "overrides": {},
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "templateRenderer": "HELM3",
+      "type": "bakeManifest"
+    },
+    {
+      "account": "default",
+      "cloudProvider": "kubernetes",
+      "manifestArtifactId": "5d10f917-47eb-4f08-a831-933f8fd66788",
+      "moniker": {
+        "app": "nginxdemo"
+      },
+      "name": "Deploy (Manifest)",
+      "refId": "2",
+      "requisiteStageRefIds": [
+        "1"
+      ],
+      "skipExpressionEvaluation": false,
+      "source": "artifact",
+      "trafficManagement": {
+        "enabled": false,
+        "options": {
+          "enableTraffic": false,
+          "services": []
+        }
+      },
+      "type": "deployManifest"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1600476295000"
+}
