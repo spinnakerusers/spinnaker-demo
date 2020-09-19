@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: nginxdemo
+  name: nginxdemo
+  namespace: '${ parameters.namespace }'
+spec:
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: nginxdemo
+  template:
+    metadata:
+      labels:
+        k8s-app: nginxdemo
+      name: nginxdemo
+      namespace: nginx-dev
+    spec:
+      containers:
+        - image: '${ parameters.image }'
+          imagePullPolicy: Always
+          name: nginxdemo
+          ports:
+            - containerPort: 80
+              name: web
+              protocol: TCP
